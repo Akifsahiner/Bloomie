@@ -1,0 +1,70 @@
+{
+  "expo": {
+    "name": "Bloomie",
+    "slug": "bloomie",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FFFCF7"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.bloomie.app",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Bloomie needs camera access to take photos for health analysis.",
+        "NSPhotoLibraryUsageDescription": "Bloomie needs access to your photos to analyze plant, pet, or baby health.",
+        "NSMicrophoneUsageDescription": "Bloomie needs microphone access for voice mode to log activities hands-free."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FFFCF7"
+      },
+      "package": "com.bloomie.app",
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "RECORD_AUDIO",
+        "NOTIFICATIONS"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "your-project-id"
+      }
+    },
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#F17D7D",
+          "sounds": []
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Bloomie needs access to your photos to analyze plant, pet, or baby health.",
+          "cameraPermission": "Bloomie needs camera access to take photos for health analysis."
+        }
+      ],
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "Bloomie needs microphone access for voice mode to log activities hands-free."
+        }
+      ]
+    ]
+  }
+}
