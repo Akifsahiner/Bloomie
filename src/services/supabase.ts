@@ -5,15 +5,73 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../constants/config';
 import type { Nurture, LogEntry, Reminder, User } from '../types';
 
+// Validate config before creating client
+const validateConfig = () => {
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+    console.error('Supabase config missing!');
+    return false;
+  }
+  if (!SUPABASE_ANON_KEY.startsWith('eyJ')) {
+    console.error('Invalid Supabase anon key format!');
+    return false;
+  }
+  return true;
+};
+
 // Create Supabase client with AsyncStorage for persistence
-export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  auth: {
-    storage: AsyncStorage,
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: false,
-  },
-});
+let supabase: any;
+
+try {
+  if (validateConfig()) {
+    supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: {
+        storage: AsyncStorage,
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: false,
+      },
+    });
+  } else {
+    // Create a dummy client that won't crash
+    supabase = {
+      auth: {
+        signUp: async () => ({ data: null, error: new Error('Config invalid') }),
+        signInWithPassword: async () => ({ data: null, error: new Error('Config invalid') }),
+        signOut: async () => ({ error: null }),
+        getSession: async () => ({ data: { session: null }, error: null }),
+        getUser: async () => ({ data: { user: null }, error: null }),
+        onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
+      },
+      from: () => ({
+        select: () => ({ eq: () => ({ single: async () => ({ data: null, error: new Error('Config invalid') }) }) }),
+        insert: () => ({ select: () => ({ single: async () => ({ data: null, error: new Error('Config invalid') }) }) }),
+        update: () => ({ eq: () => ({ select: () => ({ single: async () => ({ data: null, error: new Error('Config invalid') }) }) }) }),
+        delete: () => ({ eq: async () => ({ error: null }) }),
+      }),
+    };
+  }
+} catch (e) {
+  console.error('Supabase client creation failed:', e);
+  // Fallback dummy client
+  supabase = {
+    auth: {
+      signUp: async () => ({ data: null, error: new Error('Client failed') }),
+      signInWithPassword: async () => ({ data: null, error: new Error('Client failed') }),
+      signOut: async () => ({ error: null }),
+      getSession: async () => ({ data: { session: null }, error: null }),
+      getUser: async () => ({ data: { user: null }, error: null }),
+      onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
+    },
+    from: () => ({
+      select: () => ({ eq: () => ({ single: async () => ({ data: null, error: new Error('Client failed') }) }) }),
+      insert: () => ({ select: () => ({ single: async () => ({ data: null, error: new Error('Client failed') }) }) }),
+      update: () => ({ eq: () => ({ select: () => ({ single: async () => ({ data: null, error: new Error('Client failed') }) }) }) }),
+      delete: () => ({ eq: async () => ({ error: null }) }),
+    }),
+  };
+}
+
+export { supabase };
 
 // ==================== AUTH ====================
 
