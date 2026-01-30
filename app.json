@@ -1,0 +1,71 @@
+{
+  "expo": {
+    "name": "Bloomie",
+    "slug": "bloomie",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FFFCF7"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.bloomielabs.careapp",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Bloomie needs camera access to take photos for health analysis.",
+        "NSPhotoLibraryUsageDescription": "Bloomie needs access to your photos to analyze plant, pet, or baby health.",
+        "NSMicrophoneUsageDescription": "Bloomie needs microphone access for voice mode to log activities hands-free."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FFFCF7"
+      },
+      "package": "com.bloomielabs.careapp",
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.NOTIFICATIONS",
+        "android.permission.MODIFY_AUDIO_SETTINGS"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "f7c68507-1ba7-4394-827d-423c45f2f4b7"
+      }
+    },
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "color": "#F17D7D",
+          "sounds": []
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Bloomie needs access to your photos to analyze plant, pet, or baby health.",
+          "cameraPermission": "Bloomie needs camera access to take photos for health analysis."
+        }
+      ],
+      [
+        "expo-av",
+        {
+          "microphonePermission": "Bloomie needs microphone access for voice mode to log activities hands-free."
+        }
+      ]
+    ],
+    "owner": "akifsahiner"
+  }
+}
