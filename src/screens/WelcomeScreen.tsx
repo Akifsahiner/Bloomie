@@ -1,4 +1,4 @@
-// Bloomie - Welcome Screen (Name Collection)
+// Bloomie - Welcome Screen (Simplified)
 
 import React, { useState } from 'react';
 import {
@@ -9,150 +9,76 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
-  Animated,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Colors, Spacing, BorderRadius, Shadows } from '../constants/theme';
+import { Colors, BorderRadius } from '../constants/theme';
 import { useAppStore } from '../stores/useAppStore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function WelcomeScreen() {
   const insets = useSafeAreaInsets();
   const [name, setName] = useState('');
-  const [fadeAnim] = useState(new Animated.Value(0));
   const setHasSeenWelcome = useAppStore((state) => state.setHasSeenWelcome);
 
-  React.useEffect(() => {
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 800,
-      useNativeDriver: true,
-    }).start();
-  }, []);
-
   const handleContinue = async () => {
-    if (!name.trim()) {
-      return;
-    }
+    if (!name.trim()) return;
 
-    // Save name temporarily (will be saved to database during signup)
-    await AsyncStorage.setItem('@bloomie_temp_name', name.trim());
+    try {
+      await AsyncStorage.setItem('@bloomie_temp_name', name.trim());
+    } catch (e) {
+      // Ignore storage error
+    }
     
-    // Mark welcome as seen
     setHasSeenWelcome(true);
   };
 
   return (
     <KeyboardAvoidingView
-      style={styles.container}
+      style={[styles.container, { paddingTop: insets.top + 40 }]}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <LinearGradient
-        colors={[Colors.warmBg, Colors.cream]}
-        style={styles.gradient}
-      >
-        <View style={[styles.content, { paddingTop: insets.top + 40 }]}>
-          <Animated.View
-            style={[
-              styles.header,
-              {
-                opacity: fadeAnim,
-                transform: [
-                  {
-                    translateY: fadeAnim.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [-20, 0],
-                    }),
-                  },
-                ],
-              },
-            ]}
-          >
-            <View style={styles.iconContainer}>
-              <MaterialCommunityIcons
-                name="flower"
-                size={64}
-                color={Colors.primary}
-              />
-            </View>
-            <Text style={styles.title}>Welcome to Bloomie</Text>
-            <Text style={styles.subtitle}>
-              How should we address you?
-            </Text>
-          </Animated.View>
-
-          <Animated.View
-            style={[
-              styles.inputSection,
-              {
-                opacity: fadeAnim,
-                transform: [
-                  {
-                    translateY: fadeAnim.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [20, 0],
-                    }),
-                  },
-                ],
-              },
-            ]}
-          >
-            <View style={styles.inputContainer}>
-              <TextInput
-                style={styles.input}
-                placeholder="Your name"
-                placeholderTextColor={Colors.textSubtle}
-                value={name}
-                onChangeText={setName}
-                autoFocus
-                returnKeyType="done"
-                onSubmitEditing={handleContinue}
-              />
-              <MaterialCommunityIcons
-                name="account-outline"
-                size={24}
-                color={Colors.textSubtle}
-                style={styles.inputIcon}
-              />
-            </View>
-
-            <TouchableOpacity
-              style={[
-                styles.continueButton,
-                !name.trim() && styles.continueButtonDisabled,
-              ]}
-              onPress={handleContinue}
-              disabled={!name.trim()}
-            >
-              <LinearGradient
-                colors={
-                  name.trim()
-                    ? [Colors.primary, Colors.terracotta[500]]
-                    : [Colors.gray[300], Colors.gray[300]]
-                }
-                style={styles.buttonGradient}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-              >
-                <Text style={styles.continueButtonText}>Continue</Text>
-                <MaterialCommunityIcons
-                  name="arrow-right"
-                  size={20}
-                  color={Colors.white}
-                />
-              </LinearGradient>
-            </TouchableOpacity>
-          </Animated.View>
-
-          <View style={styles.footer}>
-            <Text style={styles.footerText}>
-              We'll use this to personalize your experience
-            </Text>
-          </View>
+      <View style={styles.content}>
+        <View style={styles.iconContainer}>
+          <MaterialCommunityIcons
+            name="flower"
+            size={64}
+            color={Colors.primary}
+          />
         </View>
-      </LinearGradient>
+        
+        <Text style={styles.title}>Welcome to Bloomie</Text>
+        <Text style={styles.subtitle}>How should we call you?</Text>
+
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="Your name"
+            placeholderTextColor={Colors.textSubtle}
+            value={name}
+            onChangeText={setName}
+            autoFocus={false}
+            returnKeyType="done"
+            onSubmitEditing={handleContinue}
+          />
+        </View>
+
+        <TouchableOpacity
+          style={[
+            styles.button,
+            !name.trim() && styles.buttonDisabled,
+          ]}
+          onPress={handleContinue}
+          disabled={!name.trim()}
+        >
+          <Text style={styles.buttonText}>Continue</Text>
+          <MaterialCommunityIcons
+            name="arrow-right"
+            size={20}
+            color={Colors.white}
+          />
+        </TouchableOpacity>
+      </View>
     </KeyboardAvoidingView>
   );
 }
@@ -160,18 +86,13 @@ export default function WelcomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  gradient: {
-    flex: 1,
+    backgroundColor: Colors.cream,
   },
   content: {
     flex: 1,
     paddingHorizontal: 24,
     justifyContent: 'center',
-  },
-  header: {
     alignItems: 'center',
-    marginBottom: 48,
   },
   iconContainer: {
     width: 120,
@@ -181,77 +102,57 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 24,
-    ...Shadows.lg,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
   },
   title: {
-    fontSize: 32,
-    fontWeight: '900',
+    fontSize: 28,
+    fontWeight: '800',
     color: Colors.textDark,
-    marginBottom: 12,
+    marginBottom: 8,
     textAlign: 'center',
-    letterSpacing: -0.5,
   },
   subtitle: {
-    fontSize: 18,
+    fontSize: 16,
     color: Colors.textSubtle,
     textAlign: 'center',
-    fontWeight: '500',
-  },
-  inputSection: {
     marginBottom: 32,
   },
   inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    width: '100%',
     backgroundColor: Colors.white,
     borderRadius: BorderRadius.xl,
     paddingHorizontal: 20,
     paddingVertical: 16,
     marginBottom: 24,
-    borderWidth: 2,
-    borderColor: Colors.gray[100],
-    ...Shadows.md,
+    borderWidth: 1,
+    borderColor: Colors.gray[200],
   },
   input: {
-    flex: 1,
     fontSize: 18,
     fontWeight: '600',
     color: Colors.textDark,
+    textAlign: 'center',
   },
-  inputIcon: {
-    marginLeft: 12,
-  },
-  continueButton: {
-    borderRadius: BorderRadius.xl,
-    overflow: 'hidden',
-    ...Shadows.lg,
-  },
-  continueButtonDisabled: {
-    opacity: 0.6,
-  },
-  buttonGradient: {
+  button: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 18,
+    backgroundColor: Colors.primary,
+    paddingVertical: 16,
     paddingHorizontal: 32,
+    borderRadius: BorderRadius.xl,
     gap: 8,
   },
-  continueButtonText: {
+  buttonDisabled: {
+    backgroundColor: Colors.gray[300],
+  },
+  buttonText: {
     fontSize: 18,
     fontWeight: '700',
     color: Colors.white,
-    letterSpacing: 0.5,
-  },
-  footer: {
-    alignItems: 'center',
-    marginTop: 32,
-  },
-  footerText: {
-    fontSize: 14,
-    color: Colors.textSubtle,
-    textAlign: 'center',
-    fontStyle: 'italic',
   },
 });
-

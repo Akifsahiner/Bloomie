@@ -77,7 +77,7 @@ export const useAppStore = create<AppState>()(
       // Initial State
       user: null,
       isAuthenticated: false,
-      isLoading: true,
+      isLoading: false, // Start with false to prevent loading screen hang
       hasCompletedOnboarding: false,
       hasSeenWelcome: false,
       nurtures: [],
